@@ -1,0 +1,96 @@
+{
+  "schemaVersion": "s004-first-local-app-connector-map-v1",
+  "appName": "replace-with-app-name",
+  "connectorPolicy": {
+    "allowedBoundary": "approved-launch-kit-connectors-only",
+    "privateStateImportsAllowed": false,
+    "providerPayloadAsProductTruthAllowed": false,
+    "directModuleBypassAllowed": false
+  },
+  "connectors": [
+    {
+      "connector": "ContextInput",
+      "ownerModule": "Identity/IAM",
+      "appInput": "actor plus tenant/workspace context",
+      "expectedOutput": "normalized context",
+      "requiredTest": "context accepted for valid actor and denied for invalid actor"
+    },
+    {
+      "connector": "ProductActionInput",
+      "ownerModule": "Integration Harness",
+      "appInput": "protected product action",
+      "expectedOutput": "routed command with correlation id",
+      "requiredTest": "action routes through authorization, entitlement, evidence, telemetry, rollback, cost, and safety gates"
+    },
+    {
+      "connector": "DecisionInput",
+      "ownerModule": "Authorization",
+      "appInput": "action, actor, tenant/workspace, requested capability",
+      "expectedOutput": "allow or deny decision with reason code",
+      "requiredTest": "allow and denial cases both pass"
+    },
+    {
+      "connector": "ProviderEventInput",
+      "ownerModule": "Integration Hub",
+      "appInput": "provider-style event",
+      "expectedOutput": "normalized event accepted once or replay denied",
+      "requiredTest": "duplicate event cannot cause duplicate mutation"
+    },
+    {
+      "connector": "ModuleOutput",
+      "ownerModule": "Target Module",
+      "appInput": "module-owned result request",
+      "expectedOutput": "module-owned state or denial result",
+      "requiredTest": "module emits output without exposing private state"
+    },
+    {
+      "connector": "EvidenceOutput",
+      "ownerModule": "Workflow/Eventing/Audit",
+      "appInput": "state-changing step",
+      "expectedOutput": "durable proof record",
+      "requiredTest": "every mutation or denial emits evidence"
+    },
+    {
+      "connector": "TelemetryOutput",
+      "ownerModule": "Observability/Telemetry",
+      "appInput": "operation result",
+      "expectedOutput": "trace, metric, latency, error, and redaction signal",
+      "requiredTest": "telemetry exists for success and denial"
+    },
+    {
+      "connector": "AnalyticsOutput",
+      "ownerModule": "Analytics/Reporting",
+      "appInput": "tenant-safe report request",
+      "expectedOutput": "authorized report or denial",
+      "requiredTest": "authorized tenant receives report and unauthorized tenant is denied"
+    },
+    {
+      "connector": "SafetyOutput",
+      "ownerModule": "AI Agent Operations",
+      "appInput": "unsafe or automated action request",
+      "expectedOutput": "budget, approval, and kill-switch decision",
+      "requiredTest": "unsafe mutation is denied before state change"
+    },
+    {
+      "connector": "RollbackOutput",
+      "ownerModule": "Platform Ops/Security/Cost",
+      "appInput": "accepted mutation",
+      "expectedOutput": "rollback marker and owner",
+      "requiredTest": "rollback marker exists for accepted mutation"
+    },
+    {
+      "connector": "CostOutput",
+      "ownerModule": "Platform Ops/Security/Cost",
+      "appInput": "operation cost signal",
+      "expectedOutput": "cost counter, ceiling, owner, and block state",
+      "requiredTest": "cost ceiling blocks when threshold is exceeded"
+    },
+    {
+      "connector": "AdapterBoundary",
+      "ownerModule": "Integration Hub",
+      "appInput": "raw provider or tool payload",
+      "expectedOutput": "normalized product-safe input",
+      "requiredTest": "raw payload never reaches product modules as truth"
+    }
+  ]
+}
