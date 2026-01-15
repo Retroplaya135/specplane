@@ -1,0 +1,29 @@
+version: 0.1.0
+modules:
+  - id: product-core
+    paths:
+      - apps/web/**
+      - apps/api/**
+      - packages/domain/**
+  - id: identity-adapter
+    paths:
+      - packages/identity-adapter/**
+  - id: tenant-module
+    paths:
+      - packages/tenant/**
+      - database/migrations/**
+  - id: authorization-module
+    paths:
+      - packages/authorization-adapter/**
+  - id: billing-adapter
+    paths:
+      - packages/billing-adapter/**
+  - id: entitlement-module
+    paths:
+      - packages/entitlement/**
+  - id: test-contracts
+    paths:
+      - tests/**
+  - id: traceability-auditor
+    paths:
+      - docs/traceability/**
