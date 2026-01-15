@@ -1,0 +1,63 @@
+{
+  "schemaVersion": "s004-first-local-app-attachment-v1",
+  "readinessVerdict": "READY_FOR_FIRST_LOCAL_APP_ATTACHMENT_TEMPLATE",
+  "app": {
+    "name": "replace-with-app-name",
+    "owner": "replace-with-owner",
+    "productPath": "replace-with-controlled-product-path",
+    "attachmentMode": "local-only",
+    "customerFacing": false,
+    "productionRuntime": false
+  },
+  "requiredPath": {
+    "actor": "replace-with-actor",
+    "tenantWorkspace": "replace-with-tenant-or-workspace",
+    "protectedAction": "replace-with-protected-action",
+    "entitlement": "replace-with-entitlement",
+    "tenantRecord": "replace-with-tenant-owned-record",
+    "integrationInput": "replace-with-provider-or-tool-style-input",
+    "evidenceOutput": "replace-with-durable-proof-output",
+    "telemetryOutput": "replace-with-trace-metric-latency-error-redaction-output",
+    "analyticsOutput": "replace-with-tenant-safe-report-output",
+    "rollbackMarker": "replace-with-rollback-marker",
+    "costCounter": "replace-with-cost-ceiling-and-owner",
+    "safetyDecision": "replace-with-agent-or-automation-safety-decision"
+  },
+  "forbiddenClaims": [
+    "customer-ready",
+    "production-ready",
+    "live-provider-ready",
+    "payment-ready",
+    "monitoring-ready",
+    "autonomous-agent-ready"
+  ],
+  "forbiddenBehaviors": [
+    "module-private-state-import",
+    "provider-payload-as-product-truth",
+    "authorization-bypass",
+    "entitlement-bypass",
+    "evidence-bypass",
+    "telemetry-bypass",
+    "rollback-bypass",
+    "cost-bypass",
+    "safety-bypass",
+    "secret-introduction",
+    "customer-data-use",
+    "live-provider-traffic",
+    "real-payment-call",
+    "production-deployment",
+    "autonomous-write-authority"
+  ],
+  "validationPlan": {
+    "positivePath": "replace-with-local-success-test",
+    "denialPath": "replace-with-wrong-actor-tenant-or-entitlement-test",
+    "replayPath": "replace-with-replay-or-duplicate-denial-test",
+    "isolationPath": "replace-with-tenant-isolation-test",
+    "evidencePath": "replace-with-proof-output-test",
+    "telemetryPath": "replace-with-trace-metric-error-redaction-test",
+    "analyticsPath": "replace-with-report-access-and-denial-test",
+    "rollbackPath": "replace-with-rollback-marker-test",
+    "costPath": "replace-with-cost-ceiling-test",
+    "safetyPath": "replace-with-kill-switch-or-unsafe-action-denial-test"
+  }
+}
