@@ -1,0 +1,11 @@
+version: 0.1.0
+gates:
+  - id: requirements_schema
+    command: python3 scripts/validate_prd.py --prd specs/prd/EXAMPLE_MINIMAL_PRD.json --schema specs/prd/PRD_SCHEMA.json
+  - id: contract_chain
+    command: python3 scripts/validate_contracts.py
+  - id: traceability
+    command: python3 scripts/check_spec_traceability.py
+budgets:
+  missingTraceabilityMarkers: 0
+  overwrittenScaffoldFiles: 0
