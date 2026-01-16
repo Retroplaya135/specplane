@@ -1,0 +1,21 @@
+applicationShell:
+  layouts:
+    PublicLayout:
+      routes: [/, /pricing, /legal/privacy, /legal/terms]
+      components: [Header, Footer]
+    AuthLayout:
+      routes: [/login, /signup, /reset-password]
+      components: [AuthCard, AuthProviderButtons]
+    AppShellLayout:
+      routes: [/app, /app/[workspaceSlug]/**]
+      components: [SidebarNav, TopBar, WorkspaceSwitcher, UserMenu, MainContent]
+  protectedRoutes:
+    - /app
+    - /app/[workspaceSlug]
+    - /app/[workspaceSlug]/settings
+  requiredStates:
+    - loading
+    - empty
+    - error
+    - unauthorized
+    - degraded
