@@ -1,0 +1,76 @@
+version: 0.1.0
+sourceRefs:
+  - prd:userFlows
+endpoints:
+  - id: get_current_user
+    sourceRefs:
+      - prd:userFlows.flow_signup_onboard
+    ownerModule: identity-adapter
+    riskLevel: medium
+    method: GET
+    path: /api/v1/me
+    auth: required
+    permission: self:read
+    requestSchema: null
+    responseSchema: CurrentUserResponse
+    rateLimit: user:60/minute
+    idempotency: none
+    auditEvent: null
+    entitlement: null
+    testRefs:
+      - TEST-AUTH-001
+    errors:
+      - status: 401
+        code: unauthenticated
+
+  - id: create_workspace
+    sourceRefs:
+      - prd:userFlows.flow_signup_onboard
+      - specs/data/DATA_MODEL_TEMPLATE.yaml#workspaces
+    ownerModule: tenant-module
+    riskLevel: high
+    method: POST
+    path: /api/v1/organizations/{organizationId}/workspaces
+    auth: required
+    permission: workspace:create
+    requestSchema: CreateWorkspaceRequest
+    responseSchema: WorkspaceResponse
+    rateLimit: user:20/minute
+    idempotency: optional-client-key
+    auditEvent: workspace.created
+    entitlement: workspaces.max_count
+    testRefs:
+      - TEST-UI-001
+      - TEST-RLS-001
+    errors:
+      - status: 400
+        code: invalid_request
+      - status: 401
+        code: unauthenticated
+      - status: 403
+        code: unauthorized
+      - status: 409
+        code: duplicate_workspace
+      - status: 429
+        code: rate_limited
+schemas:
+  CreateWorkspaceRequest:
+    type: object
+    required: [name]
+    properties:
+      name:
+        type: string
+        minLength: 2
+        maxLength: 80
+  WorkspaceResponse:
+    type: object
+    required: [id, name, slug]
+    properties:
+      id: { type: string, format: uuid }
+      name: { type: string }
+      slug: { type: string }
+rules:
+  everyEndpointRequiresAuthClassification: true
+  everyEndpointRequiresPermission: true
+  everyMutationRequiresAuditDecision: true
+  everyMutationRequiresIdempotencyDecision: true
