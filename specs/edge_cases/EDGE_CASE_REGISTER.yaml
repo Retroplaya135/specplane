@@ -1,0 +1,85 @@
+version: 0.1.0
+sourceRefs:
+  - prd:edgeCases
+edgeCases:
+  authentication:
+    - id: EC-AUTH-001
+      sourceRefs:
+        - specs/auth/AUTH_FLOW_TEMPLATE.yaml#auth_signup
+      ownerModule: identity-adapter
+      riskLevel: high
+      case: expired login callback state
+      expected: reject and restart auth flow
+      testRequired: true
+    - id: EC-AUTH-002
+      sourceRefs:
+        - specs/auth/AUTH_FLOW_TEMPLATE.yaml#auth_signup
+      ownerModule: identity-adapter
+      riskLevel: high
+      case: user signs up with email already mapped to another identity provider
+      expected: account linking policy is applied; no duplicate user ambiguity
+      testRequired: true
+  authorization:
+    - id: EC-AUTHZ-001
+      sourceRefs:
+        - specs/security/AUTHORIZATION_MATRIX_TEMPLATE.yaml
+      ownerModule: authorization-module
+      riskLevel: critical
+      case: user is removed from workspace while page is open
+      expected: next mutation fails with 403 and UI refreshes permissions
+      testRequired: true
+  billing:
+    - id: EC-BILL-001
+      sourceRefs:
+        - specs/billing/BILLING_FLOW_TEMPLATE.yaml#billing_failed_payment
+      ownerModule: billing-adapter
+      riskLevel: high
+      case: webhook arrives before checkout redirect completes
+      expected: local subscription state still updates correctly
+      testRequired: true
+    - id: EC-BILL-002
+      sourceRefs:
+        - specs/billing/BILLING_FLOW_TEMPLATE.yaml#billing_checkout
+      ownerModule: billing-adapter
+      riskLevel: critical
+      case: duplicate webhook delivery
+      expected: event is idempotently ignored or replay-safe
+      testRequired: true
+    - id: EC-BILL-003
+      sourceRefs:
+        - specs/billing/BILLING_FLOW_TEMPLATE.yaml#billing_downgrade
+      ownerModule: entitlement-module
+      riskLevel: high
+      case: downgrade below current usage quota
+      expected: user is informed and policy is applied
+      testRequired: true
+  tenantIsolation:
+    - id: EC-TENANT-001
+      sourceRefs:
+        - specs/roles/RBAC_RLS_TEMPLATE.yaml#rls_workspaces_select_member
+      ownerModule: tenant-module
+      riskLevel: critical
+      case: user manually changes workspace slug in URL
+      expected: no cross-tenant data is revealed
+      testRequired: true
+  reliability:
+    - id: EC-REL-001
+      sourceRefs:
+        - manifests/module_registry.yaml#notification-module
+      ownerModule: notification-module
+      riskLevel: medium
+      case: email provider is down during invitation
+      expected: invitation is queued/retried and UI explains delay
+      testRequired: true
+  rateLimits:
+    - id: EC-RATE-001
+      sourceRefs:
+        - specs/api/API_SPEC_TEMPLATE.yaml#create_workspace
+      ownerModule: api-contract-architect
+      riskLevel: high
+      case: invite endpoint is spammed
+      expected: rate limit blocks abuse and writes security event if severe
+      testRequired: true
+rules:
+  everyEdgeCaseRequiresSourceRefs: true
+  everyCriticalEdgeCaseRequiresTest: true
