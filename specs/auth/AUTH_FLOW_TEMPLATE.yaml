@@ -1,0 +1,59 @@
+version: 0.1.0
+sourceRefs:
+  - prd:userFlows
+flows:
+  signup:
+    id: auth_signup
+    sourceRefs:
+      - prd:userFlows.flow_signup_onboard
+    ownerModule: identity-adapter
+    riskLevel: high
+    steps:
+      - visitor opens signup
+      - identity provider authenticates user
+      - callback validates state/nonce/issuer/audience
+      - app maps identity subject to local user
+      - app creates profile if missing
+      - app redirects to onboarding
+    requiredSecurity:
+      - no token logging
+      - no open redirect
+      - csrf/state validation
+      - email verification policy documented
+    testRefs:
+      - TEST-AUTH-001
+  protected_route:
+    id: auth_protected_route
+    sourceRefs:
+      - specs/security/AUTHORIZATION_MATRIX_TEMPLATE.yaml
+    ownerModule: authorization-module
+    riskLevel: critical
+    steps:
+      - request reaches protected route
+      - session/token is validated
+      - current user is loaded
+      - workspace context is resolved
+      - permission is checked server-side
+      - unauthorized users get 403 or redirect
+    testRefs:
+      - TEST-RLS-001
+  invitation_acceptance:
+    id: auth_invitation_acceptance
+    sourceRefs:
+      - prd:userFlows
+    ownerModule: tenant-module
+    riskLevel: high
+    steps:
+      - user opens invite link
+      - token is validated and not expired
+      - user authenticates
+      - invitation email/domain is matched if required
+      - membership is created
+      - audit event is written
+      - token is consumed
+    testRefs:
+      - TEST-AUTH-001
+rules:
+  everyCallbackRequiresStateNonceIssuerAudienceValidation: true
+  everyProtectedRouteRequiresServerSidePermissionCheck: true
+  noTokenLogging: true
