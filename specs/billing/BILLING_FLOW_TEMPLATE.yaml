@@ -1,0 +1,60 @@
+version: 0.1.0
+sourceRefs:
+  - prd:pricingHypothesis
+flows:
+  checkout:
+    id: billing_checkout
+    sourceRefs:
+      - prd:pricingHypothesis
+    ownerModule: billing-adapter
+    riskLevel: critical
+    steps:
+      - user selects plan
+      - server validates plan and price
+      - server creates checkout session
+      - user completes checkout
+      - provider sends webhook
+      - webhook signature is verified
+      - event idempotency is checked
+      - subscription state is synced
+      - entitlement state is recalculated
+      - audit event is written
+    testRefs:
+      - TEST-BILLING-001
+  failed_payment:
+    id: billing_failed_payment
+    sourceRefs:
+      - specs/edge_cases/EDGE_CASE_REGISTER.yaml#EC-BILL-001
+    ownerModule: billing-adapter
+    riskLevel: high
+    steps:
+      - provider sends invoice/payment failed webhook
+      - event is verified and stored
+      - subscription is marked past_due locally
+      - grace period starts
+      - user/admin notification is sent
+      - entitlement behavior follows plan policy
+    testRefs:
+      - TEST-BILLING-001
+  downgrade:
+    id: billing_downgrade
+    sourceRefs:
+      - specs/edge_cases/EDGE_CASE_REGISTER.yaml#EC-BILL-003
+    ownerModule: entitlement-module
+    riskLevel: high
+    steps:
+      - user selects lower plan
+      - server validates downgrade impact
+      - quota conflicts are surfaced
+      - subscription change is requested
+      - entitlement state updates after provider confirmation
+    testRefs:
+      - TEST-BILLING-001
+idempotency:
+  table: billing_webhook_events
+  uniqueKey: provider_event_id
+  behavior: ignore_already_processed_or_replay_safely
+rules:
+  everyWebhookRequiresSignatureVerification: true
+  everyProviderEventRequiresIdempotency: true
+  entitlementsAreSeparatedFromProviderState: true
