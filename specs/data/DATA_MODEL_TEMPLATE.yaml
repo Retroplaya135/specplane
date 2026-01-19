@@ -1,0 +1,75 @@
+version: 0.1.0
+sourceRefs:
+  - prd:dataObjects
+entities:
+  - id: users
+    table: users
+    scope: global
+    sensitivity: confidential
+    ownerModule: identity-adapter
+    sourceRefs:
+      - prd:dataObjects.users
+    riskLevel: high
+    allowedFileScope:
+      - packages/identity-adapter/**
+      - database/migrations/**
+    columns:
+      - name: id
+        type: uuid
+        pk: true
+      - name: identity_provider
+        type: text
+        required: true
+      - name: identity_subject
+        type: text
+        required: true
+      - name: email
+        type: text
+        required: true
+    relationships: []
+    rlsRequired: false
+    testRefs:
+      - TEST-AUTH-001
+
+  - id: organizations
+    table: organizations
+    scope: organization
+    sensitivity: internal
+    ownerModule: tenant-module
+    sourceRefs:
+      - prd:dataObjects.organizations
+    riskLevel: critical
+    allowedFileScope:
+      - packages/tenant/**
+      - database/migrations/**
+    columns:
+      - name: id
+        type: uuid
+        pk: true
+      - name: name
+        type: text
+        required: true
+      - name: slug
+        type: text
+        required: true
+        unique: true
+    relationships:
+      - memberships.organization_id -> organizations.id
+    rlsRequired: true
+    rlsPolicyRefs:
+      - rls_organizations_select_member
+    testRefs:
+      - TEST-RLS-001
+
+rules:
+  tenantScopedTablesMustHave:
+    - organization_id OR workspace_id
+  appendOnlyTables:
+    - audit_events
+    - usage_events
+  forbidden:
+    - plaintext_password
+    - unscoped_tenant_data
+    - nullable_owner_for_private_data
+  everyEntityRequiresSourceRefs: true
+  everyTenantScopedEntityRequiresRlsPolicyRefs: true
