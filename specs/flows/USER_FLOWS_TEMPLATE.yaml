@@ -1,0 +1,34 @@
+version: 0.1.0
+sourceRefs:
+  - prd:userFlows
+flows:
+  - id: flow_signup_onboarding
+    name: Signup and onboarding
+    actorRef: persona_admin
+    riskLevel: high
+    sourceRefs:
+      - prd:userFlows.flow_signup_onboard
+    entryPoint: public_signup
+    successState: workspace_exists_and_first_action_available
+    failureStates:
+      - id: flow_signup_onboarding.email_exists
+        expectedBehavior: show safe account-linking or login path
+      - id: flow_signup_onboarding.workspace_invalid
+        expectedBehavior: show validation error without creating tenant records
+    steps:
+      - id: step_visit_signup
+        description: visitor opens signup
+        traceability: prd:userFlows.flow_signup_onboard.steps.1
+      - id: step_authenticate
+        description: identity provider authenticates user
+        traceability: auth:signup
+      - id: step_create_workspace
+        description: user creates organization and workspace
+        traceability: api:create_workspace
+      - id: step_first_action
+        description: user reaches first core action
+        traceability: ui:/app/[workspaceSlug]
+rules:
+  everyFlowHasFailureStates: true
+  everyStepHasTraceability: true
+  implementationRequiresLinkedTest: true
