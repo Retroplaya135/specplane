@@ -1,0 +1,118 @@
+{
+  "prdVersion": "0.1.0",
+  "product": {
+    "name": "ExampleSaaS",
+    "oneLine": "A placeholder SaaS that helps teams complete a core workflow.",
+    "coreValueProposition": "Teams complete the core workflow faster with shared visibility and controlled access.",
+    "targetMarket": "Small B2B teams",
+    "problem": "Teams manage this workflow manually and lose time/status/context.",
+    "solution": "A workspace-based dashboard with structured records, collaboration, and usage-based access.",
+    "successMetric": "First core action completed within 10 minutes of signup."
+  },
+  "personas": [
+    {
+      "id": "persona_admin",
+      "name": "Workspace Admin",
+      "jobToBeDone": "Set up workspace and manage team access",
+      "painPoints": [
+        "Manual setup",
+        "Unclear permissions"
+      ]
+    }
+  ],
+  "mvp": {
+    "inScope": [
+      "Signup",
+      "Workspace creation",
+      "One core workflow",
+      "Billing placeholder",
+      "Audit logs"
+    ],
+    "outOfScope": [
+      "Enterprise SSO",
+      "Advanced analytics"
+    ],
+    "releaseCriteria": [
+      "Core workflow works end-to-end",
+      "Tenant isolation tests pass"
+    ]
+  },
+  "pricingHypothesis": {
+    "model": "seat_based",
+    "plans": [
+      "starter",
+      "pro"
+    ]
+  },
+  "userFlows": [
+    {
+      "id": "flow_signup_onboard",
+      "name": "Signup and create workspace",
+      "actor": "persona_admin",
+      "steps": [
+        "Visit landing page",
+        "Sign up",
+        "Create organization",
+        "Create workspace",
+        "Complete first action"
+      ],
+      "successState": "Workspace exists and first action is complete",
+      "failureStates": [
+        "Email already exists",
+        "Workspace name invalid"
+      ]
+    }
+  ],
+  "dataObjects": [
+    {
+      "id": "obj_workspace",
+      "name": "Workspace",
+      "owner": "Organization",
+      "tenantScope": "organization",
+      "sensitivity": "internal",
+      "fields": [
+        "name",
+        "slug",
+        "created_at"
+      ]
+    }
+  ],
+  "roles": [
+    {
+      "id": "role_workspace_owner",
+      "name": "Workspace Owner",
+      "scope": "workspace",
+      "permissions": [
+        "workspace:read",
+        "workspace:update",
+        "member:invite",
+        "billing:read"
+      ]
+    }
+  ],
+  "nonGoals": [
+    "Do not build complex enterprise features in MVP"
+  ],
+  "assumptions": [
+    "External identity provider will be used"
+  ],
+  "risks": [
+    "Billing and entitlement coupling can create bugs if not separated"
+  ],
+  "acceptanceCriteria": [
+    {
+      "id": "AC-001",
+      "statement": "An authenticated admin can create a workspace and see it in the dashboard",
+      "testType": "e2e"
+    }
+  ],
+  "edgeCases": [
+    {
+      "id": "EC-001",
+      "category": "tenant_isolation",
+      "case": "User attempts to access another organization's workspace",
+      "expectedBehavior": "403 or not found; no data leaked",
+      "testRequired": true
+    }
+  ]
+}
