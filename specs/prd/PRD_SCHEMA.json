@@ -1,0 +1,350 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SaaS PRD Contract",
+  "type": "object",
+  "required": [
+    "prdVersion",
+    "product",
+    "personas",
+    "mvp",
+    "userFlows",
+    "dataObjects",
+    "roles",
+    "nonGoals",
+    "acceptanceCriteria",
+    "edgeCases"
+  ],
+  "properties": {
+    "prdVersion": {
+      "type": "string"
+    },
+    "product": {
+      "type": "object",
+      "required": [
+        "name",
+        "oneLine",
+        "coreValueProposition",
+        "targetMarket",
+        "problem",
+        "solution"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "oneLine": {
+          "type": "string"
+        },
+        "coreValueProposition": {
+          "type": "string"
+        },
+        "targetMarket": {
+          "type": "string"
+        },
+        "problem": {
+          "type": "string"
+        },
+        "solution": {
+          "type": "string"
+        },
+        "successMetric": {
+          "type": "string"
+        }
+      }
+    },
+    "personas": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/persona"
+      },
+      "minItems": 1
+    },
+    "mvp": {
+      "type": "object",
+      "required": [
+        "inScope",
+        "outOfScope",
+        "releaseCriteria"
+      ],
+      "properties": {
+        "inScope": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "outOfScope": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "releaseCriteria": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "pricingHypothesis": {
+      "type": "object",
+      "properties": {
+        "model": {
+          "enum": [
+            "free_trial",
+            "freemium",
+            "seat_based",
+            "usage_based",
+            "hybrid",
+            "enterprise_contract",
+            "unknown"
+          ]
+        },
+        "plans": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "userFlows": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/userFlow"
+      }
+    },
+    "dataObjects": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/dataObject"
+      }
+    },
+    "roles": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/role"
+      }
+    },
+    "nonGoals": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "assumptions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "risks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "acceptanceCriteria": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/acceptanceCriterion"
+      }
+    },
+    "edgeCases": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/edgeCase"
+      }
+    }
+  },
+  "$defs": {
+    "persona": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "jobToBeDone",
+        "painPoints"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "jobToBeDone": {
+          "type": "string"
+        },
+        "painPoints": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "userFlow": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "actor",
+        "steps",
+        "successState",
+        "failureStates"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "actor": {
+          "type": "string"
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "successState": {
+          "type": "string"
+        },
+        "failureStates": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "dataObject": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "owner",
+        "tenantScope",
+        "sensitivity"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "owner": {
+          "type": "string"
+        },
+        "tenantScope": {
+          "enum": [
+            "global",
+            "organization",
+            "workspace",
+            "user"
+          ]
+        },
+        "sensitivity": {
+          "enum": [
+            "public",
+            "internal",
+            "confidential",
+            "restricted"
+          ]
+        },
+        "fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "role": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "scope",
+        "permissions"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "scope": {
+          "enum": [
+            "organization",
+            "workspace",
+            "system"
+          ]
+        },
+        "permissions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "acceptanceCriterion": {
+      "type": "object",
+      "required": [
+        "id",
+        "statement",
+        "testType"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "statement": {
+          "type": "string"
+        },
+        "testType": {
+          "enum": [
+            "unit",
+            "integration",
+            "e2e",
+            "manual",
+            "security"
+          ]
+        }
+      }
+    },
+    "edgeCase": {
+      "type": "object",
+      "required": [
+        "id",
+        "category",
+        "case",
+        "expectedBehavior"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string"
+        },
+        "case": {
+          "type": "string"
+        },
+        "expectedBehavior": {
+          "type": "string"
+        },
+        "testRequired": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}
