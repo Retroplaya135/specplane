@@ -1,0 +1,82 @@
+version: 0.1.0
+sourceRefs:
+  - prd:roles
+roles:
+  - id: organization_owner
+    sourceRefs:
+      - prd:roles.organization_owner
+    scope: organization
+    permissions:
+      - organization:read
+      - organization:update
+      - workspace:create
+      - member:invite
+      - member:remove
+      - billing:read
+      - billing:update
+  - id: workspace_admin
+    sourceRefs:
+      - prd:roles.workspace_admin
+    scope: workspace
+    permissions:
+      - workspace:read
+      - workspace:update
+      - member:invite
+      - core_resource:create
+      - core_resource:update
+      - audit:read
+  - id: workspace_member
+    sourceRefs:
+      - prd:roles.workspace_member
+    scope: workspace
+    permissions:
+      - workspace:read
+      - core_resource:read
+      - core_resource:create
+  - id: workspace_viewer
+    sourceRefs:
+      - prd:roles.workspace_viewer
+    scope: workspace
+    permissions:
+      - workspace:read
+      - core_resource:read
+rlsPolicies:
+  - id: rls_organizations_select_member
+    table: organizations
+    sourceRefs:
+      - specs/data/DATA_MODEL_TEMPLATE.yaml#organizations
+      - specs/security/AUTHORIZATION_MATRIX_TEMPLATE.yaml#perm_workspace_read
+    select: user must have active membership in organization
+    insert: authenticated user may create organization during onboarding only
+    update: organization owner only
+    delete: organization owner only; soft delete preferred
+    testRefs:
+      - TEST-RLS-001
+  - id: rls_workspaces_select_member
+    table: workspaces
+    sourceRefs:
+      - specs/data/DATA_MODEL_TEMPLATE.yaml#organizations
+      - specs/security/AUTHORIZATION_MATRIX_TEMPLATE.yaml#perm_workspace_read
+    select: user must have membership in workspace or organization owner role
+    insert: user must have workspace:create on organization
+    update: user must have workspace:update on workspace
+    delete: organization owner only; soft delete preferred
+    testRefs:
+      - TEST-RLS-001
+  - id: rls_audit_events_append_only
+    table: audit_events
+    sourceRefs:
+      - manifests/event_catalog.yaml
+    select: user must have audit:read on workspace or organization
+    insert: service/app only
+    update: never
+    delete: never
+    testRefs:
+      - TEST-RLS-001
+forbidden:
+  - frontend_only_authorization
+  - global_admin_bypass_without_audit
+  - tenant_table_without_rls
+rules:
+  everyPolicyRequiresSourceRefs: true
+  everyTenantPolicyRequiresTestRefs: true
