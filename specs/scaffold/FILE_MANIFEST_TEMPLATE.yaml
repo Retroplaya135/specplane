@@ -1,0 +1,86 @@
+version: 0.1.0
+sourceRefs:
+  - specs/scaffold/SCAFFOLD_PLAN_TEMPLATE.yaml
+directories:
+  - id: dir_apps_web_app
+    path: apps/web/app
+    purpose: Next.js-compatible route placeholders
+    ownerModule: product-core
+  - id: dir_apps_api_routes
+    path: apps/api/src/routes
+    purpose: API route placeholders
+    ownerModule: product-core
+  - id: dir_packages_domain
+    path: packages/domain/src
+    purpose: domain type placeholders
+    ownerModule: product-core
+  - id: dir_packages_tenant
+    path: packages/tenant/src
+    purpose: tenant boundary placeholders
+    ownerModule: tenant-module
+  - id: dir_database_migrations
+    path: database/migrations
+    purpose: migration placeholders
+    ownerModule: tenant-module
+  - id: dir_tests_unit
+    path: tests/unit
+    purpose: unit test placeholders
+    ownerModule: test-contracts
+  - id: dir_tests_integration
+    path: tests/integration
+    purpose: integration and RLS test placeholders
+    ownerModule: test-contracts
+  - id: dir_tests_e2e
+    path: tests/e2e
+    purpose: critical user-flow test placeholders
+    ownerModule: test-contracts
+  - id: dir_docs_traceability
+    path: docs/traceability
+    purpose: generated traceability notes
+    ownerModule: traceability-auditor
+files:
+  - id: file_readme
+    path: README.md
+    kind: documentation
+    ownerModule: product-core
+    traceability:
+      - prd:product
+    allowedChange: scaffold_only
+    riskLevel: low
+  - id: file_traceability
+    path: TRACEABILITY.md
+    kind: traceability
+    ownerModule: traceability-auditor
+    traceability:
+      - prd:acceptanceCriteria
+      - specs/tests/TEST_MATRIX_TEMPLATE.yaml
+    allowedChange: scaffold_only
+    riskLevel: medium
+  - id: file_api_routes_readme
+    path: apps/api/src/routes/README.md
+    kind: documentation
+    ownerModule: api-contract-architect
+    traceability:
+      - specs/api/API_SPEC_TEMPLATE.yaml
+    allowedChange: scaffold_only
+    riskLevel: medium
+  - id: file_web_app_readme
+    path: apps/web/app/README.md
+    kind: documentation
+    ownerModule: frontend-component-architect
+    traceability:
+      - specs/ui/COMPONENT_TREE_TEMPLATE.yaml
+    allowedChange: scaffold_only
+    riskLevel: medium
+  - id: file_tenant_readme
+    path: packages/tenant/src/README.md
+    kind: documentation
+    ownerModule: tenant-module
+    traceability:
+      - specs/roles/RBAC_RLS_TEMPLATE.yaml
+    allowedChange: scaffold_only
+    riskLevel: high
+rules:
+  everyFileHasTraceability: true
+  everyFileHasOwnerModule: true
+  generatedFilesArePlaceholders: true
