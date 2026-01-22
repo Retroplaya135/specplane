@@ -1,0 +1,36 @@
+version: 0.1.0
+sourceRefs:
+  - manifests/module_registry.yaml
+modules:
+  - id: identity-adapter
+    sourceRefs:
+      - manifests/module_registry.yaml#identity-adapter
+    allowedFiles:
+      - packages/identity-adapter/**
+    forbiddenImports:
+      - packages/billing-adapter/**
+    riskLevel: high
+  - id: tenant-module
+    sourceRefs:
+      - manifests/module_registry.yaml#tenant-module
+    allowedFiles:
+      - packages/tenant/**
+      - database/migrations/**
+    forbiddenImports:
+      - packages/billing-adapter/provider-client
+    riskLevel: critical
+  - id: product-core
+    sourceRefs:
+      - manifests/module_registry.yaml#product-core
+    allowedFiles:
+      - apps/web/**
+      - apps/api/**
+      - packages/domain/**
+    forbiddenImports:
+      - raw_identity_provider_sdk
+      - raw_billing_provider_sdk
+    riskLevel: medium
+rules:
+  importsAcrossAdaptersRequireInterface: true
+  tenantBoundaryCannotDependOnBillingProvider: true
+  productCoreCannotBypassAuthorizationModule: true
