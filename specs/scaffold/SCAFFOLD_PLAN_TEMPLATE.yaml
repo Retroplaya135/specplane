@@ -1,0 +1,34 @@
+version: 0.1.0
+sourceRefs:
+  - specs/prd/EXAMPLE_MINIMAL_PRD.json
+  - specs/data/DATA_MODEL_TEMPLATE.yaml
+  - specs/api/API_SPEC_TEMPLATE.yaml
+  - specs/ui/COMPONENT_TREE_TEMPLATE.yaml
+plan:
+  id: scaffold_product_foundation
+  name: Product foundation skeleton
+  riskLevel: medium
+  nonGoals:
+    - no production auth implementation
+    - no production billing provider integration
+    - no product dashboard implementation
+  outputPolicy:
+    overwriteExistingFiles: false
+    businessLogicAllowed: false
+    generatedFilesRequireTraceability: true
+  phases:
+    - id: scaffold_directories
+      description: Create package, app, database, test, and traceability directories.
+      sourceRefs:
+        - manifest:module_registry
+    - id: scaffold_placeholder_files
+      description: Create placeholder files listed in file manifest.
+      sourceRefs:
+        - specs/scaffold/FILE_MANIFEST_TEMPLATE.yaml
+validation:
+  requiredBeforeRun:
+    - PRD_SCHEMA_VALID
+    - CONTRACT_CHAIN_VALID
+    - FILE_MANIFEST_VALID
+  requiredAfterRun:
+    - SPEC_TRACEABILITY_CHECK
