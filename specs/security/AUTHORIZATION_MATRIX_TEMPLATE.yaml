@@ -1,0 +1,38 @@
+version: 0.1.0
+sourceRefs:
+  - specs/roles/RBAC_RLS_TEMPLATE.yaml
+rules:
+  serverSideOnly: true
+  frontendOnlyAuthorizationForbidden: true
+  serviceRoleBypassRequiresAudit: true
+permissions:
+  - id: perm_workspace_read
+    permission: workspace:read
+    roleRefs:
+      - organization_owner
+      - workspace_admin
+      - workspace_member
+      - workspace_viewer
+    endpointRefs:
+      - get_current_user
+    rlsPolicyRefs:
+      - rls_workspaces_select_member
+    testRefs:
+      - TEST-RLS-001
+    riskLevel: high
+  - id: perm_workspace_create
+    permission: workspace:create
+    roleRefs:
+      - organization_owner
+    endpointRefs:
+      - create_workspace
+    rlsPolicyRefs:
+      - rls_workspaces_insert_creator
+    auditEventRefs:
+      - workspace.created
+    testRefs:
+      - TEST-UI-001
+    riskLevel: high
+decisions:
+  unauthorizedReadBehavior: 403_or_not_found_without_cross_tenant_leakage
+  adminBypassPolicy: explicit_service_operation_with_audit_event
