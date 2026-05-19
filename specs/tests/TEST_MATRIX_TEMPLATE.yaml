@@ -1,0 +1,50 @@
+version: 0.1.0
+sourceRefs:
+  - prd:acceptanceCriteria
+  - specs/edge_cases/EDGE_CASE_REGISTER.yaml
+tests:
+  - id: TEST-AUTH-001
+    type: integration
+    linkedAcceptanceCriterion: AC-001
+    description: unauthenticated user cannot access protected workspace API
+    expected: 401
+    sourceRefs:
+      - specs/auth/AUTH_FLOW_TEMPLATE.yaml#auth_protected_route
+    ownerModule: test-contracts
+    riskLevel: high
+  - id: TEST-RLS-001
+    type: security
+    linkedAcceptanceCriterion: AC-tenant-isolation
+    description: member of organization A cannot read workspace from organization B
+    expected: no rows or 403
+    sourceRefs:
+      - specs/roles/RBAC_RLS_TEMPLATE.yaml#rls_workspaces_select_member
+      - specs/edge_cases/EDGE_CASE_REGISTER.yaml#EC-TENANT-001
+    ownerModule: test-contracts
+    riskLevel: critical
+  - id: TEST-BILLING-001
+    type: integration
+    linkedAcceptanceCriterion: AC-billing-idempotency
+    description: duplicate billing webhook event does not double update entitlement
+    expected: single processed event
+    sourceRefs:
+      - specs/billing/BILLING_FLOW_TEMPLATE.yaml#billing_checkout
+      - specs/edge_cases/EDGE_CASE_REGISTER.yaml#EC-BILL-002
+    ownerModule: test-contracts
+    riskLevel: critical
+  - id: TEST-UI-001
+    type: e2e
+    linkedAcceptanceCriterion: AC-onboarding
+    description: user signs up, creates workspace, completes first core action
+    expected: dashboard shows success state
+    sourceRefs:
+      - specs/ui/COMPONENT_TREE_TEMPLATE.yaml#route_workspace_dashboard
+      - specs/state/STATE_FLOW_TEMPLATE.yaml#create_workspace_state_flow
+    ownerModule: test-contracts
+    riskLevel: high
+rules:
+  criticalBusinessLogicRequiresUnitTests: true
+  tenantScopedDataRequiresRlsTests: true
+  billingWebhooksRequireIdempotencyTests: true
+  publicApiRequiresContractTests: true
+  everyTestRequiresSourceRefs: true
