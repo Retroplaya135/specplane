@@ -1,0 +1,46 @@
+version: 0.1.0
+sourceRefs:
+  - specs/api/API_SPEC_TEMPLATE.yaml
+flows:
+  - id: create_workspace_state_flow
+    sourceRefs:
+      - prd:userFlows.flow_signup_onboard
+      - specs/api/API_SPEC_TEMPLATE.yaml#create_workspace
+    riskLevel: high
+    trigger: user_submits_create_workspace_form
+    client:
+      component: CreateWorkspaceForm
+      validates: CreateWorkspaceClientSchema
+      pendingState: submit_disabled_spinner
+    server:
+      endpoint: POST /api/v1/organizations/{organizationId}/workspaces
+      validation: CreateWorkspaceRequest
+      authn: required
+      authz: workspace:create
+      entitlement: workspaces.max_count
+      transaction:
+        - insert workspaces
+        - insert memberships for creator if needed
+        - insert audit_events workspace.created
+        - insert usage_events workspace.created
+      events:
+        - workspace.created
+    response:
+      success: WorkspaceResponse
+      failure:
+        - invalid_request
+        - unauthorized
+        - quota_exceeded
+        - duplicate_workspace
+    clientAfterSuccess:
+      - invalidate workspace list cache
+      - navigate to /app/[workspaceSlug]
+    clientAfterFailure:
+      - show field errors or toast
+    testRefs:
+      - TEST-UI-001
+      - TEST-RLS-001
+rules:
+  everyMutationFlowRequiresAuthnAuthz: true
+  everyMutationFlowRequiresFailureBehavior: true
+  everyServerTransactionRequiresAuditDecision: true
