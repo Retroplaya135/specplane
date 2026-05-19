@@ -1,0 +1,39 @@
+version: 0.1.0
+sourceRefs:
+  - specs/data/DATA_MODEL_TEMPLATE.yaml
+classifications:
+  - id: class_public
+    label: public
+    description: Safe to show publicly.
+    handling:
+      loggingAllowed: true
+      encryptionRequired: false
+  - id: class_internal
+    label: internal
+    description: Tenant-scoped operational data.
+    handling:
+      loggingAllowed: metadata_only
+      encryptionRequired: at_rest
+  - id: class_confidential
+    label: confidential
+    description: User, billing, identity, and private tenant data.
+    handling:
+      loggingAllowed: false
+      encryptionRequired: at_rest_and_in_transit
+  - id: class_restricted
+    label: restricted
+    description: Secrets, credentials, tokens, and private keys.
+    handling:
+      loggingAllowed: false
+      encryptionRequired: managed_secret_store
+entityMappings:
+  - entityRef: users
+    classificationRef: class_confidential
+    reason: identity and contact data
+  - entityRef: organizations
+    classificationRef: class_internal
+    reason: tenant metadata
+rules:
+  restrictedDataNeverInLogs: true
+  confidentialDataRequiresServerSideAuthorization: true
+  tenantScopedInternalDataRequiresRls: true
