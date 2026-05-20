@@ -1,0 +1,67 @@
+version: 0.1.0
+sourceRefs:
+  - prd:userFlows
+routes:
+  - id: route_public_home
+    sourceRefs:
+      - prd:product.oneLine
+    path: /
+    type: public
+    page: LandingPage
+    layout: PublicLayout
+    permissions: public
+    serverData: []
+    clientState: []
+    states:
+      loading: null
+      empty: null
+      error: PublicErrorState
+      unauthorized: null
+    offline: static_or_cached_public_copy_only
+    analyticsEvent: public.home.viewed
+
+  - id: route_workspace_dashboard
+    sourceRefs:
+      - prd:userFlows.flow_signup_onboard
+      - specs/api/API_SPEC_TEMPLATE.yaml#create_workspace
+    path: /app/[workspaceSlug]
+    type: protected_workspace
+    page: WorkspaceDashboardPage
+    layout: AppShellLayout
+    permissions:
+      required: workspace:read
+    serverData:
+      - currentUser
+      - currentOrganization
+      - currentWorkspace
+      - dashboardSummary
+    clientState:
+      - selectedDateRange
+    states:
+      loading: DashboardSkeleton
+      empty: EmptyDashboardState
+      error: DashboardErrorState
+      unauthorized: UnauthorizedState
+    actions:
+      - createCoreResource
+      - openInviteDialog
+    offline: degraded_readonly_state
+    analyticsEvent: workspace.dashboard.viewed
+components:
+  AppShellLayout:
+    sourceRefs:
+      - specs/ui/COMPONENT_TREE_TEMPLATE.yaml#route_workspace_dashboard
+    children:
+      - SidebarNav
+      - WorkspaceSwitcher
+      - TopBar
+      - MainContent
+  WorkspaceSwitcher:
+    sourceRefs:
+      - specs/data/DATA_MODEL_TEMPLATE.yaml#workspaces
+    data: currentUser.workspaces
+    states: [loading, empty, error]
+rules:
+  everyProtectedRouteRequiresPermissions: true
+  everyRouteRequiresLoadingEmptyErrorUnauthorizedStates: true
+  everyRouteRequiresSourceRefs: true
